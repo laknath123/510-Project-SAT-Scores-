@@ -1,0 +1,35 @@
+---
+title: "Project Script"
+author: "Laknath Dias Gunathilake"
+date: "July 7, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Loading and Cleaning Data
+```{r, Loading data}
+library(here)
+library(dplyr)
+df<-read.csv(here("datafiles","2006_-_2012_School_Demographics_and_Accountability_Snapshot.csv"))
+df_results<-read.csv(here("datafiles","SAT__College_Board__2010_School_Level_Results.csv"))
+
+```
+
+```{r}
+dftemp<-df%>%
+  filter(schoolyear=="20102011")%>% # Obtaining  just the 2010 values
+  distinct(DBN,.keep_all = T)
+df_demog<-dftemp
+
+df_results<-na.omit(df_results) #Removing the NA values
+
+
+df_cleaned<-left_join(df_results,df_demog,"DBN")
+
+write.csv(df_cleaned,here("datafiles","df_cleaned.csv"))
+```
+
+
