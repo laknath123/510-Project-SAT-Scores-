@@ -12,12 +12,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ##Loading and Cleaning Data
 ```{r}
 #Loading Required Library's
+# Install these if they are not available 
 library(here)
 library(dplyr)
 library(ggplot2)
 ```
 
 ```{r, Loading data}
+#Loading the two datasets
+# You should have a need to change the file path
 df<-read.csv(here("datafiles","2006_-_2012_School_Demographics_and_Accountability_Snapshot.csv"))
 df_results<-read.csv(here("datafiles","SAT__College_Board__2010_School_Level_Results.csv"))
 
@@ -26,15 +29,19 @@ df_results<-read.csv(here("datafiles","SAT__College_Board__2010_School_Level_Res
 ```{r,combining data}
 dftemp<-df%>%
   filter(schoolyear=="20102011")%>% # Obtaining  just the 2010 values
-  distinct(DBN,.keep_all = T)
-df_demog<-dftemp
+  distinct(DBN,.keep_all = T)  # This is to make sure that we keep only distinct                                   rows
+df_demog<-dftemp # assigning df_temp to a temporary variable
 
 
-df_results<-df_results%>%
-            filter(!is.na(Mathematics.Mean))
+df_results<-df_results%>%    # This gets rid of the rows where the Mathematics.mean
+            filter(!is.na(Mathematics.Mean)) # is NA
   
-df_cleaned<-left_join(df_results,df_demog,"DBN")
+df_cleaned<-left_join(df_results,df_demog,"DBN") # This combines using a left join 
+                                                 # the cleaned results data and the                                                  # demographic dataset  
 
+
+# The following code selects the required columns we want 
+# in our datasetfor downstream ananalysis 
 df_cleaned<-df_cleaned%>%
             select(DBN,
                    School.Name,
@@ -51,10 +58,12 @@ df_cleaned<-df_cleaned%>%
                    male_per,
                    female_per)
 
-df_cleaned<-na.omit(df_cleaned)
+df_cleaned<-na.omit(df_cleaned) # This code removes rows that have any    
+                                # NA values that are in the combined dataset                              
+# This code saves the df_cleaned dataset into the datafiles folder
+# You can now load this df_cleaned.csv dataset and continue on with the analysis
 
-
-write.csv(df_cleaned,here("datafiles","df_cleaned.csv"))
+write.csv(df_cleaned,here("datafiles","df_cleaned.csv"))  
 ```
 
 
